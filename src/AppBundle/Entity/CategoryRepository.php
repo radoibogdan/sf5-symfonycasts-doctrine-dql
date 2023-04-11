@@ -21,6 +21,8 @@ class CategoryRepository extends EntityRepository
         # var_dump($query->getSQL());
 
         $qb = $this->createQueryBuilder('cat')
+            ->leftJoin('cat.fortuneCookies', 'fc')
+            ->addSelect('fc')
             ->addOrderBy('cat.name', 'DESC');
         $query = $qb->getQuery();
 
@@ -38,8 +40,20 @@ class CategoryRepository extends EntityRepository
                 OR cat.iconKey LIKE :searchTerm
                 OR fc.fortune LIKE :searchTerm')
             ->leftJoin('cat.fortuneCookies', 'fc')
+            ->addSelect('fc')
             ->setParameter('searchTerm', '%'.$term.'%')
             ->getQuery()
             ->execute();
+    }
+
+    public function findWithFortunesJoin(int $id)
+    {
+        return $this->createQueryBuilder('cat')
+            ->leftJoin('cat.fortuneCookies', 'fc')
+            ->andWhere('cat.id = :id')
+            ->addSelect('fc')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

@@ -45,8 +45,13 @@ class FortuneController extends Controller
             throw $this->createNotFoundException();
         }
 
+        $fortunesPrinted =$this->getDoctrine()
+            ->getRepository('AppBundle:FortuneCookie')
+            ->countNumberPrintedForCategory($category);
+
         return $this->render('fortune/showCategory.html.twig',[
-            'category' => $category
+            'category' => $category,
+            'fortunesPrinted' => $fortunesPrinted
         ]);
     }
 }

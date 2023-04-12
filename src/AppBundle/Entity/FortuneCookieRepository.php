@@ -21,4 +21,15 @@ class FortuneCookieRepository extends EntityRepository
             ->getQuery()
             ->getSingleScalarResult(); # Récupère que la valeur de la somme
     }
+
+    public function getDetailedNumberPrintedForCategory(Category $category)
+    {
+        return $this->createQueryBuilder('fc')
+            ->innerJoin('fc.category', 'cat')
+            ->andWhere('fc.category = :category')
+            ->setParameter('category', $category)
+            ->select("SUM(fc.numberPrinted) as fortunesPrinted, AVG(fc.numberPrinted) as fortunesAverage, cat.name")
+            ->getQuery()
+            ->getOneOrNullResult(); # Récupère un array associatif "clé => valeur"
+    }
 }

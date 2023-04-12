@@ -47,7 +47,7 @@ class FortuneController extends Controller
 
         $fortunesData =$this->getDoctrine()
             ->getRepository('AppBundle:FortuneCookie')
-            ->getDetailedNumberPrintedForCategory($category);
+            ->getDetailsRawSql($category);
 
         $fortunesPrinted = $fortunesData['fortunesPrinted'];
         $fortunesAverage = $fortunesData['fortunesAverage'];

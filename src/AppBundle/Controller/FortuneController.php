@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Entity\Category;
@@ -14,6 +15,17 @@ class FortuneController extends Controller
      */
     public function homepageAction(Request $request)
     {
+        # Enable filter globally = ACTIVATED NOW
+        # AppBundle/EventListener/BeforeRequestListener.php
+
+        # Enable filter / Controller
+        # /** @var EntityManager $em */
+        # $em = $this->getDoctrine()->getManager();
+        # # Enable filter from config/config.yml
+        # $filter = $em->getFilters()
+        #     ->enable('fortune_cookies_discontinued');
+        # $filter->setParameter('discontinued', true);
+
         $categoryRepository = $this->getDoctrine()
             ->getManager()
             ->getRepository('AppBundle:Category');

@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * CategoryRepository
@@ -21,9 +22,8 @@ class CategoryRepository extends EntityRepository
         # var_dump($query->getSQL());
 
         $qb = $this->createQueryBuilder('cat')
-            ->leftJoin('cat.fortuneCookies', 'fc')
-            ->addSelect('fc')
             ->addOrderBy('cat.name', 'DESC');
+        $this->addFortuneCookieJoinAndSelect($qb);
         $query = $qb->getQuery();
 
         # Récupère le dql créé par le query builder
@@ -35,25 +35,38 @@ class CategoryRepository extends EntityRepository
     public function search($term)
     {
         # DO NOT USE orWhere
-        return $this->createQueryBuilder('cat')
+        $qb = $this->createQueryBuilder('cat')
             ->andWhere('cat.name LIKE :searchTerm 
                 OR cat.iconKey LIKE :searchTerm
                 OR fc.fortune LIKE :searchTerm')
-            ->leftJoin('cat.fortuneCookies', 'fc')
-            ->addSelect('fc')
-            ->setParameter('searchTerm', '%'.$term.'%')
+            ->setParameter('searchTerm', '%'.$term.'%');
+        $this->addFortuneCookieJoinAndSelect($qb);
+        return $qb
             ->getQuery()
             ->execute();
     }
 
     public function findWithFortunesJoin(int $id)
     {
-        return $this->createQueryBuilder('cat')
-            ->leftJoin('cat.fortuneCookies', 'fc')
+        $qb = $this->createQueryBuilder('cat')
             ->andWhere('cat.id = :id')
-            ->addSelect('fc')
-            ->setParameter('id', $id)
+            ->setParameter('id', $id);
+        $this->addFortuneCookieJoinAndSelect($qb);
+        return $qb
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    /**
+     * Réutiliser le join sur la table fortune_cookies
+     *
+     * @param QueryBuilder $qb
+     * @return QueryBuilder
+     */
+    private function addFortuneCookieJoinAndSelect(QueryBuilder $qb)
+    {
+        $qb
+            ->leftJoin('cat.fortuneCookies', 'fc')
+            ->addSelect('fc');
     }
 }
